@@ -1,16 +1,16 @@
-import React from 'react';
 import { Link, useLocation } from 'wouter';
-import { Menu, X, HeartHandshake } from 'lucide-react';
+import { Menu, X, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 export function Navbar() {
   const [location] = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/apply', label: 'Apply for Aid' },
-    { href: '/testimonials', label: 'Stories of Hope' },
+    { href: '/apply', label: 'Apply for Grant' },
+    { href: '/testimonials', label: 'Voices of Hope' },
     { href: '/contact', label: 'Contact Us' },
   ];
 
@@ -18,14 +18,19 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 group">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground group-hover:bg-primary/90 transition-colors">
-                <HeartHandshake className="h-6 w-6" />
+                <GraduationCap className="h-6 w-6" />
               </div>
-              <span className="font-serif text-2xl font-bold text-primary tracking-tight hidden sm:block">
-                HopeGrant Foundation
-              </span>
+              <div className="hidden sm:flex flex-col leading-none">
+                <span className="font-serif text-xl font-bold text-primary tracking-tight">
+                  HopeGrant Foundation
+                </span>
+                <span className="text-xs font-medium text-muted-foreground tracking-wider uppercase">
+                  Student Aid Resource Program
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -61,7 +66,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <div className="space-y-1 px-4 pb-6 pt-4">

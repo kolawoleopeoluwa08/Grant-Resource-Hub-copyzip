@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, numeric, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -9,11 +9,12 @@ export const applicationsTable = pgTable("applications", {
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   address: text("address").notNull(),
-  aidType: text("aid_type").notNull(),
+  grantType: text("grant_type").notNull(),
   requestedAmount: numeric("requested_amount", { precision: 12, scale: 2 }).notNull(),
-  purpose: text("purpose").notNull(),
+  institution: text("institution").notNull(),
+  yearOfStudy: text("year_of_study").notNull(),
   description: text("description").notNull(),
-  householdSize: integer("household_size"),
+  gpa: numeric("gpa", { precision: 4, scale: 2 }),
   annualIncome: numeric("annual_income", { precision: 12, scale: 2 }),
   status: text("status").notNull().default("pending"),
   submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),

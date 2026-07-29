@@ -9,6 +9,6 @@
 export interface OrgStats {
   totalApplications: number;
   approvedApplications: number;
+  livesImpacted: number;
   totalDisbursed: number;
-  totalTestimonials: number;
 }

@@ -9,16 +9,29 @@ export interface HealthStatus {
   status: string;
 }
 
-export type ApplicationInputAidType = typeof ApplicationInputAidType[keyof typeof ApplicationInputAidType];
+export type ApplicationInputGrantType = typeof ApplicationInputGrantType[keyof typeof ApplicationInputGrantType];
 
 
-export const ApplicationInputAidType = {
-  emergency_aid: 'emergency_aid',
-  education_grant: 'education_grant',
-  business_grant: 'business_grant',
-  housing_assistance: 'housing_assistance',
-  medical_aid: 'medical_aid',
-  other: 'other',
+export const ApplicationInputGrantType = {
+  tuition_fees: 'tuition_fees',
+  books_supplies: 'books_supplies',
+  housing_meals: 'housing_meals',
+  technology_equipment: 'technology_equipment',
+  research_fees: 'research_fees',
+  study_abroad: 'study_abroad',
+  general_education: 'general_education',
+} as const;
+
+export type ApplicationInputYearOfStudy = typeof ApplicationInputYearOfStudy[keyof typeof ApplicationInputYearOfStudy];
+
+
+export const ApplicationInputYearOfStudy = {
+  freshman: 'freshman',
+  sophomore: 'sophomore',
+  junior: 'junior',
+  senior: 'senior',
+  graduate: 'graduate',
+  doctorate: 'doctorate',
 } as const;
 
 export interface ApplicationInput {
@@ -30,14 +43,15 @@ export interface ApplicationInput {
   email: string;
   phone: string;
   address: string;
-  aidType: ApplicationInputAidType;
+  grantType: ApplicationInputGrantType;
   requestedAmount: number;
   /** @minLength 1 */
-  purpose: string;
+  institution: string;
+  yearOfStudy: ApplicationInputYearOfStudy;
   /** @minLength 10 */
   description: string;
   /** @nullable */
-  householdSize?: number | null;
+  gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
 }
@@ -59,12 +73,13 @@ export interface Application {
   email: string;
   phone: string;
   address: string;
-  aidType: string;
+  grantType: string;
   requestedAmount: number;
-  purpose: string;
+  institution: string;
+  yearOfStudy: string;
   description: string;
   /** @nullable */
-  householdSize?: number | null;
+  gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
   status: ApplicationStatus;
@@ -75,7 +90,7 @@ export interface Testimonial {
   id: number;
   name: string;
   location: string;
-  aidType: string;
+  grantType: string;
   message: string;
   rating: number;
   /** @nullable */
@@ -110,8 +125,8 @@ export interface ContactMessage {
 export interface OrgStats {
   totalApplications: number;
   approvedApplications: number;
+  livesImpacted: number;
   totalDisbursed: number;
-  totalTestimonials: number;
 }
 
 export interface ErrorResponse {

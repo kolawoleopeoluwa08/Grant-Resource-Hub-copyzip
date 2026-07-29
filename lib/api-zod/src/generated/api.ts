@@ -18,7 +18,7 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * @summary Submit a grant or aid application
+ * @summary Submit a student aid application
  */
 
 
@@ -35,11 +35,12 @@ export const SubmitApplicationBody = zod.object({
   "email": zod.string().min(submitApplicationBodyEmailMin),
   "phone": zod.string(),
   "address": zod.string(),
-  "aidType": zod.enum(['emergency_aid', 'education_grant', 'business_grant', 'housing_assistance', 'medical_aid', 'other']),
+  "grantType": zod.enum(['tuition_fees', 'books_supplies', 'housing_meals', 'technology_equipment', 'research_fees', 'study_abroad', 'general_education']),
   "requestedAmount": zod.number(),
-  "purpose": zod.string().min(1),
+  "institution": zod.string().min(1),
+  "yearOfStudy": zod.enum(['freshman', 'sophomore', 'junior', 'senior', 'graduate', 'doctorate']),
   "description": zod.string().min(submitApplicationBodyDescriptionMin),
-  "householdSize": zod.number().nullish(),
+  "gpa": zod.number().nullish(),
   "annualIncome": zod.number().nullish()
 })
 
@@ -50,11 +51,12 @@ export const SubmitApplicationResponse = zod.object({
   "email": zod.string(),
   "phone": zod.string(),
   "address": zod.string(),
-  "aidType": zod.string(),
+  "grantType": zod.string(),
   "requestedAmount": zod.number(),
-  "purpose": zod.string(),
+  "institution": zod.string(),
+  "yearOfStudy": zod.string(),
   "description": zod.string(),
-  "householdSize": zod.number().nullish(),
+  "gpa": zod.number().nullish(),
   "annualIncome": zod.number().nullish(),
   "status": zod.enum(['pending', 'under_review', 'approved', 'rejected']),
   "submittedAt": zod.string()
@@ -68,7 +70,7 @@ export const ListTestimonialsResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "location": zod.string(),
-  "aidType": zod.string(),
+  "grantType": zod.string(),
   "message": zod.string(),
   "rating": zod.number(),
   "avatarInitials": zod.string().nullish(),
@@ -113,8 +115,8 @@ export const SubmitContactResponse = zod.object({
 export const GetStatsResponse = zod.object({
   "totalApplications": zod.number(),
   "approvedApplications": zod.number(),
-  "totalDisbursed": zod.number(),
-  "totalTestimonials": zod.number()
+  "livesImpacted": zod.number(),
+  "totalDisbursed": zod.number()
 })
 
 

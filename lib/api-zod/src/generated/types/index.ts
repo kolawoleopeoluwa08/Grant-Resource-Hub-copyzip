@@ -8,7 +8,8 @@
 
 export * from './application';
 export * from './applicationInput';
-export * from './applicationInputAidType';
+export * from './applicationInputGrantType';
+export * from './applicationInputYearOfStudy';
 export * from './applicationStatus';
 export * from './contactInput';
 export * from './contactMessage';

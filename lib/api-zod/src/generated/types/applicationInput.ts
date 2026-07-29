@@ -5,7 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { ApplicationInputAidType } from './applicationInputAidType';
+import type { ApplicationInputGrantType } from './applicationInputGrantType';
+import type { ApplicationInputYearOfStudy } from './applicationInputYearOfStudy';
 
 export interface ApplicationInput {
   /** @minLength 1 */
@@ -16,14 +17,15 @@ export interface ApplicationInput {
   email: string;
   phone: string;
   address: string;
-  aidType: ApplicationInputAidType;
+  grantType: ApplicationInputGrantType;
   requestedAmount: number;
   /** @minLength 1 */
-  purpose: string;
+  institution: string;
+  yearOfStudy: ApplicationInputYearOfStudy;
   /** @minLength 10 */
   description: string;
   /** @nullable */
-  householdSize?: number | null;
+  gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
 }

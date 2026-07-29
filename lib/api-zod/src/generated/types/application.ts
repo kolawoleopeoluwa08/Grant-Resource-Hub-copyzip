@@ -14,12 +14,13 @@ export interface Application {
   email: string;
   phone: string;
   address: string;
-  aidType: string;
+  grantType: string;
   requestedAmount: number;
-  purpose: string;
+  institution: string;
+  yearOfStudy: string;
   description: string;
   /** @nullable */
-  householdSize?: number | null;
+  gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
   status: ApplicationStatus;

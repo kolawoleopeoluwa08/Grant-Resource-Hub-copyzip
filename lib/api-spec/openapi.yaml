@@ -11,7 +11,7 @@ tags:
   - name: health
     description: Health operations
   - name: applications
-    description: Grant/Aid application operations
+    description: Student aid application operations
   - name: testimonials
     description: Testimonial operations
   - name: contact
@@ -35,7 +35,7 @@ paths:
     post:
       operationId: submitApplication
       tags: [applications]
-      summary: Submit a grant or aid application
+      summary: Submit a student aid application
       requestBody:
         required: true
         content:
@@ -127,9 +127,10 @@ components:
         - email
         - phone
         - address
-        - aidType
+        - grantType
         - requestedAmount
-        - purpose
+        - institution
+        - yearOfStudy
         - description
       properties:
         firstName:
@@ -145,18 +146,21 @@ components:
           type: string
         address:
           type: string
-        aidType:
+        grantType:
           type: string
-          enum: [emergency_aid, education_grant, business_grant, housing_assistance, medical_aid, other]
+          enum: [tuition_fees, books_supplies, housing_meals, technology_equipment, research_fees, study_abroad, general_education]
         requestedAmount:
           type: number
-        purpose:
+        institution:
           type: string
           minLength: 1
+        yearOfStudy:
+          type: string
+          enum: [freshman, sophomore, junior, senior, graduate, doctorate]
         description:
           type: string
           minLength: 10
-        householdSize:
+        gpa:
           type: ["number", "null"]
         annualIncome:
           type: ["number", "null"]
@@ -170,9 +174,10 @@ components:
         - email
         - phone
         - address
-        - aidType
+        - grantType
         - requestedAmount
-        - purpose
+        - institution
+        - yearOfStudy
         - description
         - status
         - submittedAt
@@ -189,15 +194,17 @@ components:
           type: string
         address:
           type: string
-        aidType:
+        grantType:
           type: string
         requestedAmount:
           type: number
-        purpose:
+        institution:
+          type: string
+        yearOfStudy:
           type: string
         description:
           type: string
-        householdSize:
+        gpa:
           type: ["number", "null"]
         annualIncome:
           type: ["number", "null"]
@@ -213,7 +220,7 @@ components:
         - id
         - name
         - location
-        - aidType
+        - grantType
         - message
         - rating
         - createdAt
@@ -224,7 +231,7 @@ components:
           type: string
         location:
           type: string
-        aidType:
+        grantType:
           type: string
         message:
           type: string
@@ -288,16 +295,16 @@ components:
       required:
         - totalApplications
         - approvedApplications
+        - livesImpacted
         - totalDisbursed
-        - totalTestimonials
       properties:
         totalApplications:
           type: number
         approvedApplications:
           type: number
-        totalDisbursed:
+        livesImpacted:
           type: number
-        totalTestimonials:
+        totalDisbursed:
           type: number
 
     ErrorResponse:

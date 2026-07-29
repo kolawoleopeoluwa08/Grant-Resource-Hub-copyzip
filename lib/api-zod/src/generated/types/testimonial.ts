@@ -10,7 +10,7 @@ export interface Testimonial {
   id: number;
   name: string;
   location: string;
-  aidType: string;
+  grantType: string;
   message: string;
   rating: number;
   /** @nullable */

@@ -144,7 +144,7 @@ export const getSubmitApplicationUrl = () => {
 }
 
 /**
- * @summary Submit a grant or aid application
+ * @summary Submit a student aid application
  */
 export const submitApplication = async (applicationInput: ApplicationInput, options?: Parameters<typeof customFetch>[1]): Promise<Application> => {
 
@@ -193,7 +193,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SubmitApplicationMutationError = ErrorType<ErrorResponse>
 
     /**
- * @summary Submit a grant or aid application
+ * @summary Submit a student aid application
  */
 export const useSubmitApplication = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitApplication>>, TError,{data: BodyType<ApplicationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
