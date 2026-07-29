@@ -16,6 +16,7 @@ export const applicationsTable = pgTable("applications", {
   description: text("description").notNull(),
   gpa: numeric("gpa", { precision: 4, scale: 2 }),
   annualIncome: numeric("annual_income", { precision: 12, scale: 2 }),
+  paymentMethod: text("payment_method"),
   status: text("status").notNull().default("pending"),
   submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
 });

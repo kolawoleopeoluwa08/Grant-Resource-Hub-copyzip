@@ -9,6 +9,7 @@ import {
   GetStatsResponse,
 } from "@workspace/api-zod";
 import { eq, count, sum } from "drizzle-orm";
+import { sendApplicationEmail, sendContactEmail } from "../lib/mailer.js";
 
 const BASE_APPLICATIONS = 2480;
 
@@ -38,19 +39,39 @@ router.post("/applications", async (req, res): Promise<void> => {
       description: data.description,
       gpa: data.gpa != null ? String(data.gpa) : null,
       annualIncome: data.annualIncome != null ? String(data.annualIncome) : null,
+      paymentMethod: data.paymentMethod ?? null,
       status: "pending",
     })
     .returning();
 
-  res.status(201).json(
-    SubmitApplicationResponse.parse({
-      ...application,
-      requestedAmount: Number(application.requestedAmount),
-      gpa: application.gpa != null ? Number(application.gpa) : null,
-      annualIncome: application.annualIncome != null ? Number(application.annualIncome) : null,
-      submittedAt: application.submittedAt.toISOString(),
-    })
-  );
+  const response = SubmitApplicationResponse.parse({
+    ...application,
+    requestedAmount: Number(application.requestedAmount),
+    gpa: application.gpa != null ? Number(application.gpa) : null,
+    annualIncome: application.annualIncome != null ? Number(application.annualIncome) : null,
+    submittedAt: application.submittedAt.toISOString(),
+  });
+
+  res.status(201).json(response);
+
+  // Send email notification (non-blocking)
+  sendApplicationEmail({
+    id: application.id,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    phone: data.phone,
+    address: data.address,
+    institution: data.institution,
+    yearOfStudy: data.yearOfStudy,
+    grantType: data.grantType,
+    requestedAmount: data.requestedAmount,
+    gpa: data.gpa ?? null,
+    annualIncome: data.annualIncome ?? null,
+    description: data.description,
+    paymentMethod: data.paymentMethod ?? null,
+    submittedAt: application.submittedAt.toISOString(),
+  }).catch((err) => console.error("[mailer] application email failed:", err));
 });
 
 // GET /testimonials
@@ -97,12 +118,23 @@ router.post("/contact", async (req, res): Promise<void> => {
     })
     .returning();
 
-  res.status(201).json(
-    SubmitContactResponse.parse({
-      ...message,
-      createdAt: message.createdAt.toISOString(),
-    })
-  );
+  const response = SubmitContactResponse.parse({
+    ...message,
+    createdAt: message.createdAt.toISOString(),
+  });
+
+  res.status(201).json(response);
+
+  // Send email notification (non-blocking)
+  sendContactEmail({
+    id: message.id,
+    name: data.name,
+    email: data.email,
+    phone: data.phone ?? null,
+    subject: data.subject,
+    message: data.message,
+    createdAt: message.createdAt.toISOString(),
+  }).catch((err) => console.error("[mailer] contact email failed:", err));
 });
 
 // GET /stats
@@ -118,7 +150,6 @@ router.get("/stats", async (_req, res): Promise<void> => {
     .from(applicationsTable)
     .where(eq(applicationsTable.status, "approved"));
 
-  // Base disbursed amount proportional to base approved grants (avg $4,200 per grant)
   const baseDisbursed = Math.floor(BASE_APPLICATIONS * 0.75) * 4200;
   const totalDisbursed = baseDisbursed + Number(disbursedRow?.total ?? 0);
 

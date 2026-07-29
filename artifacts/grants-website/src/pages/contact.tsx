@@ -109,8 +109,8 @@ export default function Contact() {
                   <div>
                     <h4 className="font-bold text-foreground mb-1">Email</h4>
                     <p className="text-muted-foreground text-sm">
-                      support@hopegrant.org<br />
-                      partnerships@hopegrant.org
+                      support@hopefoundation.org<br />
+                      partnerships@hopefoundation.org
                     </p>
                   </div>
                 </div>
