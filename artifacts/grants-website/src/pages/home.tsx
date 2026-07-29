@@ -12,7 +12,7 @@ import {
   ArrowRight,
   CheckCircle2,
 } from 'lucide-react';
-import heroImage from '@assets/generated_images/hero-helping-hands.jpg';
+import heroImage from '@assets/generated_images/hero-education-campus.jpg';
 import communityImage from '@assets/generated_images/community-support.jpg';
 
 const FADE_UP = {
@@ -97,11 +97,11 @@ export default function Home() {
       {/* Hero */}
       <section className="relative min-h-[90dvh] flex items-center pt-20 pb-32 overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-primary/80 mix-blend-multiply z-10" />
+          <div className="absolute inset-0 bg-primary/75 mix-blend-multiply z-10" />
           <img
             src={heroImage}
-            alt="Students receiving support"
-            className="w-full h-full object-cover object-center opacity-40 grayscale-[20%]"
+            alt="College students on campus"
+            className="w-full h-full object-cover object-center"
           />
         </div>
         <div className="container relative z-20 mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,7 +111,7 @@ export default function Home() {
               <span className="text-sm font-semibold tracking-wide uppercase">Student Aid Resource Program</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold font-serif leading-[1.1] mb-4 text-white drop-shadow-sm">
-              HopeGrant Foundation
+              Hope Foundation
             </h1>
             <p className="text-xl md:text-2xl text-secondary font-semibold mb-4 tracking-wide">
               Student Aid Resource Program
@@ -179,7 +179,7 @@ export default function Home() {
               What We Fund
             </h2>
             <p className="text-lg text-muted-foreground">
-              The Student Aid Resource Program provides targeted educational grants across six categories, designed to cover every dimension of the cost of higher education.
+              The Hope Foundation Student Aid Resource Program provides targeted educational grants across six categories, designed to cover every dimension of the cost of higher education.
             </p>
           </div>
           <motion.div
@@ -264,7 +264,7 @@ export default function Home() {
                 Voices of Hope
               </h2>
               <p className="text-lg text-muted-foreground">
-                Real stories from students across America whose academic journeys were transformed by HopeGrant Foundation support.
+                Real stories from students across America whose academic journeys were transformed by Hope Foundation support.
               </p>
             </div>
             <Link href="/testimonials" className="group flex items-center gap-2 text-primary font-semibold hover:text-secondary transition-colors whitespace-nowrap">
@@ -323,7 +323,7 @@ export default function Home() {
             Your Education Deserves Support
           </h2>
           <p className="text-xl text-muted-foreground mb-10">
-            Financial hardship should never be the reason a promising student leaves school. Apply today and let HopeGrant Foundation help you stay on the path to your degree.
+            Financial hardship should never be the reason a promising student leaves school. Apply today and let Hope Foundation help you stay on the path to your degree.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/apply">

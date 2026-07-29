@@ -21,3 +21,9 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+GMAIL_USER = "Lindajohnsonkate01@gmail.com"
+NOTIFY_EMAIL = "Memphisnick200@gmail.com"

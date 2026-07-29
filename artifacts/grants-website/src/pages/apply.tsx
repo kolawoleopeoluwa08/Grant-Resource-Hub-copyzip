@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion } from 'framer-motion';
-import { GraduationCap, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useSubmitApplication, ApplicationInputGrantType, ApplicationInputYearOfStudy } from '@workspace/api-client-react';
+import { GraduationCap, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
+import { useSubmitApplication, ApplicationInputGrantType, ApplicationInputYearOfStudy, ApplicationInputPaymentMethod } from '@workspace/api-client-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,7 @@ const formSchema = z.object({
   gpa: z.coerce.number().min(0).max(4.0).optional(),
   annualIncome: z.coerce.number().min(0).optional(),
   description: z.string().min(20, 'Please provide more details about your situation (min 20 characters)'),
+  paymentMethod: z.nativeEnum(ApplicationInputPaymentMethod, { required_error: 'Please select a payment receiving method' }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -55,6 +56,21 @@ const yearOfStudyLabels: Record<string, string> = {
   senior: 'Senior (4th Year)',
   graduate: 'Graduate Student',
   doctorate: 'Doctorate / PhD Candidate',
+};
+
+const paymentMethodLabels: Record<string, { label: string; desc: string }> = {
+  check: {
+    label: 'Check',
+    desc: 'A physical check mailed to your registered address.',
+  },
+  wire_transfer: {
+    label: 'Wire Transfer',
+    desc: 'Funds sent directly to your bank account via wire transfer.',
+  },
+  moneygram: {
+    label: 'MoneyGram',
+    desc: 'Pick up funds at any MoneyGram location near you.',
+  },
 };
 
 export default function Apply() {
@@ -100,7 +116,7 @@ export default function Apply() {
           </div>
           <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Application Received</h1>
           <p className="text-xl text-muted-foreground mb-4 leading-relaxed">
-            Thank you for applying to the HopeGrant Foundation Student Aid Resource Program.
+            Thank you for applying to the Hope Foundation Student Aid Resource Program.
           </p>
           <p className="text-base text-muted-foreground mb-10 leading-relaxed">
             Your application has been securely submitted to our academic review committee. You will receive a confirmation email shortly, and a decision within <strong>5–7 business days</strong>.
@@ -137,7 +153,7 @@ export default function Apply() {
             Student Grant Application
           </h1>
           <p className="text-secondary font-semibold mb-4 tracking-wide uppercase text-sm">
-            HopeGrant Foundation — Student Aid Resource Program
+            Hope Foundation — Student Aid Resource Program
           </p>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             All information you provide is strictly confidential and used only by our academic review committee to assess your eligibility for educational grant funding.
@@ -173,28 +189,28 @@ export default function Apply() {
                   <FormField control={form.control} name="firstName" render={({ field }) => (
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
-                      <FormControl><Input data-testid="input-firstName" placeholder="Jane" {...field} /></FormControl>
+                      <FormControl><Input placeholder="Jane" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="lastName" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
-                      <FormControl><Input data-testid="input-lastName" placeholder="Smith" {...field} /></FormControl>
+                      <FormControl><Input placeholder="Smith" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="email" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email Address</FormLabel>
-                      <FormControl><Input data-testid="input-email" type="email" placeholder="jane.smith@university.edu" {...field} /></FormControl>
+                      <FormControl><Input type="email" placeholder="jane.smith@university.edu" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
-                      <FormControl><Input data-testid="input-phone" type="tel" placeholder="(555) 123-4567" {...field} /></FormControl>
+                      <FormControl><Input type="tel" placeholder="(555) 123-4567" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -202,7 +218,7 @@ export default function Apply() {
                     <FormField control={form.control} name="address" render={({ field }) => (
                       <FormItem>
                         <FormLabel>Residential Address</FormLabel>
-                        <FormControl><Input data-testid="input-address" placeholder="123 Campus Drive, Apt 2B, City, State, ZIP" {...field} /></FormControl>
+                        <FormControl><Input placeholder="123 Campus Drive, Apt 2B, City, State, ZIP" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -220,7 +236,7 @@ export default function Apply() {
                     <FormField control={form.control} name="institution" render={({ field }) => (
                       <FormItem>
                         <FormLabel>College / University</FormLabel>
-                        <FormControl><Input data-testid="input-institution" placeholder="e.g. University of Michigan, Ann Arbor" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g. University of Michigan, Ann Arbor" {...field} /></FormControl>
                         <FormDescription>Enter the full name of your enrolled institution.</FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -231,7 +247,7 @@ export default function Apply() {
                       <FormLabel>Year of Study</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger data-testid="select-yearOfStudy">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select your year..." />
                           </SelectTrigger>
                         </FormControl>
@@ -248,7 +264,7 @@ export default function Apply() {
                     <FormItem>
                       <FormLabel>Current GPA <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                       <FormControl>
-                        <Input data-testid="input-gpa" type="number" step="0.01" min="0" max="4.0" placeholder="3.50" {...field} value={field.value ?? ''} />
+                        <Input type="number" step="0.01" min="0" max="4.0" placeholder="3.50" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormDescription>Your most recent cumulative GPA on a 4.0 scale.</FormDescription>
                       <FormMessage />
@@ -268,7 +284,7 @@ export default function Apply() {
                       <FormLabel>Grant Category</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger data-testid="select-grantType">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select a category..." />
                           </SelectTrigger>
                         </FormControl>
@@ -285,7 +301,7 @@ export default function Apply() {
                     <FormItem>
                       <FormLabel>Requested Amount ($)</FormLabel>
                       <FormControl>
-                        <Input data-testid="input-requestedAmount" type="number" placeholder="3000" {...field} value={field.value ?? ''} />
+                        <Input type="number" placeholder="3000" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormDescription>Maximum grant: $25,000 per application.</FormDescription>
                       <FormMessage />
@@ -295,7 +311,7 @@ export default function Apply() {
                     <FormItem>
                       <FormLabel>Annual Household Income ($) <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                       <FormControl>
-                        <Input data-testid="input-annualIncome" type="number" placeholder="45000" {...field} value={field.value ?? ''} />
+                        <Input type="number" placeholder="45000" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormDescription>Helps our committee assess financial need.</FormDescription>
                       <FormMessage />
@@ -308,7 +324,6 @@ export default function Apply() {
                     <FormLabel>Statement of Need</FormLabel>
                     <FormControl>
                       <Textarea
-                        data-testid="textarea-description"
                         placeholder="Please describe your financial situation, how the grant will be used, and how it will impact your education. The more specific you are, the better our committee can evaluate your request..."
                         className="min-h-[160px] resize-y"
                         {...field}
@@ -320,12 +335,47 @@ export default function Apply() {
                 )} />
               </div>
 
+              {/* Payment Receiving Method */}
+              <div>
+                <h2 className="text-2xl font-serif font-bold text-foreground mb-2 pb-2 border-b border-border flex items-center gap-3">
+                  <CreditCard className="h-6 w-6 text-secondary" />
+                  Payment Receiving Method
+                </h2>
+                <p className="text-muted-foreground text-sm mb-6">
+                  If your application is approved, how would you like to receive your grant funds?
+                </p>
+                <FormField control={form.control} name="paymentMethod" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Payment Method</FormLabel>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                      {Object.entries(paymentMethodLabels).map(([value, { label, desc }]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => field.onChange(value)}
+                          className={`text-left p-5 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
+                            field.value === value
+                              ? 'border-primary bg-primary/5 shadow-md'
+                              : 'border-border bg-card hover:border-primary/40 hover:shadow-sm'
+                          }`}
+                        >
+                          <div className={`font-bold text-base mb-1 ${field.value === value ? 'text-primary' : 'text-foreground'}`}>
+                            {field.value === value && <span className="mr-1">✓</span>}{label}
+                          </div>
+                          <div className="text-xs text-muted-foreground leading-relaxed">{desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
               <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-muted-foreground">
                   By submitting, you confirm that all information provided is accurate and you agree to our Terms of Service.
                 </p>
                 <Button
-                  data-testid="button-submit"
                   type="submit"
                   size="lg"
                   className="w-full sm:w-auto min-w-[220px] h-14 text-lg font-bold"

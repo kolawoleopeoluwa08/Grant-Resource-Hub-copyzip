@@ -44,10 +44,10 @@ export default function Testimonials() {
             Voices of Hope
           </h1>
           <p className="text-secondary font-semibold mb-6 tracking-wider uppercase text-sm">
-            Student Aid Resource Program
+            Hope Foundation — Student Aid Resource Program
           </p>
           <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto font-light leading-relaxed">
-            Real stories from college students across America who received grants from the HopeGrant Foundation — and what it meant for their academic futures.
+            Real stories from college students across America who received grants from the Hope Foundation — and what it meant for their academic futures.
           </p>
         </div>
       </div>
