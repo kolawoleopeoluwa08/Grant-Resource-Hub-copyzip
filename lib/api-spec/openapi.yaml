@@ -164,6 +164,9 @@ components:
           type: ["number", "null"]
         annualIncome:
           type: ["number", "null"]
+        paymentMethod:
+          type: string
+          enum: [check, wire_transfer, moneygram]
 
     Application:
       type: object
@@ -208,6 +211,8 @@ components:
           type: ["number", "null"]
         annualIncome:
           type: ["number", "null"]
+        paymentMethod:
+          type: ["string", "null"]
         status:
           type: string
           enum: [pending, under_review, approved, rejected]

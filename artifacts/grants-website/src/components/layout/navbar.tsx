@@ -25,7 +25,7 @@ export function Navbar() {
               </div>
               <div className="hidden sm:flex flex-col leading-none">
                 <span className="font-serif text-xl font-bold text-primary tracking-tight">
-                  HopeGrant Foundation
+                  Hope Foundation
                 </span>
                 <span className="text-xs font-medium text-muted-foreground tracking-wider uppercase">
                   Student Aid Resource Program

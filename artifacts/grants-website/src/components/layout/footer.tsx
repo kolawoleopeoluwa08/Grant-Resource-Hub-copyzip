@@ -14,7 +14,7 @@ export function Footer() {
               </div>
               <div className="flex flex-col leading-none">
                 <span className="font-serif text-xl font-bold tracking-tight text-white">
-                  HopeGrant
+                  Hope Foundation
                 </span>
                 <span className="text-xs text-primary-foreground/60 uppercase tracking-wider">
                   Student Aid Resource Program
@@ -61,7 +61,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-primary-foreground/80 text-sm">
                 <Mail className="h-5 w-5 text-secondary shrink-0" />
-                <span>grants@hopegrant.org</span>
+                <span>grants@hopefoundation.org</span>
               </li>
             </ul>
           </div>
@@ -70,7 +70,7 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-primary-foreground/60 text-sm">
-            © {new Date().getFullYear()} HopeGrant Foundation — Student Aid Resource Program. All rights reserved.
+            © {new Date().getFullYear()} Hope Foundation — Student Aid Resource Program. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-primary-foreground/60">
             <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>

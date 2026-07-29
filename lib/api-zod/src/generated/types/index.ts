@@ -9,6 +9,7 @@
 export * from './application';
 export * from './applicationInput';
 export * from './applicationInputGrantType';
+export * from './applicationInputPaymentMethod';
 export * from './applicationInputYearOfStudy';
 export * from './applicationStatus';
 export * from './contactInput';

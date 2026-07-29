@@ -34,6 +34,15 @@ export const ApplicationInputYearOfStudy = {
   doctorate: 'doctorate',
 } as const;
 
+export type ApplicationInputPaymentMethod = typeof ApplicationInputPaymentMethod[keyof typeof ApplicationInputPaymentMethod];
+
+
+export const ApplicationInputPaymentMethod = {
+  check: 'check',
+  wire_transfer: 'wire_transfer',
+  moneygram: 'moneygram',
+} as const;
+
 export interface ApplicationInput {
   /** @minLength 1 */
   firstName: string;
@@ -54,6 +63,7 @@ export interface ApplicationInput {
   gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
+  paymentMethod?: ApplicationInputPaymentMethod;
 }
 
 export type ApplicationStatus = typeof ApplicationStatus[keyof typeof ApplicationStatus];
@@ -82,6 +92,8 @@ export interface Application {
   gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
+  /** @nullable */
+  paymentMethod?: string | null;
   status: ApplicationStatus;
   submittedAt: string;
 }

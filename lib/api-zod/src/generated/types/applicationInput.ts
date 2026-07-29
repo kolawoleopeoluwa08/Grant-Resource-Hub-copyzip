@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ApplicationInputGrantType } from './applicationInputGrantType';
+import type { ApplicationInputPaymentMethod } from './applicationInputPaymentMethod';
 import type { ApplicationInputYearOfStudy } from './applicationInputYearOfStudy';
 
 export interface ApplicationInput {
@@ -28,4 +29,5 @@ export interface ApplicationInput {
   gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
+  paymentMethod?: ApplicationInputPaymentMethod;
 }

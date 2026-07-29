@@ -41,7 +41,8 @@ export const SubmitApplicationBody = zod.object({
   "yearOfStudy": zod.enum(['freshman', 'sophomore', 'junior', 'senior', 'graduate', 'doctorate']),
   "description": zod.string().min(submitApplicationBodyDescriptionMin),
   "gpa": zod.number().nullish(),
-  "annualIncome": zod.number().nullish()
+  "annualIncome": zod.number().nullish(),
+  "paymentMethod": zod.enum(['check', 'wire_transfer', 'moneygram']).optional()
 })
 
 export const SubmitApplicationResponse = zod.object({
@@ -58,6 +59,7 @@ export const SubmitApplicationResponse = zod.object({
   "description": zod.string(),
   "gpa": zod.number().nullish(),
   "annualIncome": zod.number().nullish(),
+  "paymentMethod": zod.string().nullish(),
   "status": zod.enum(['pending', 'under_review', 'approved', 'rejected']),
   "submittedAt": zod.string()
 })

@@ -23,6 +23,8 @@ export interface Application {
   gpa?: number | null;
   /** @nullable */
   annualIncome?: number | null;
+  /** @nullable */
+  paymentMethod?: string | null;
   status: ApplicationStatus;
   submittedAt: string;
 }
