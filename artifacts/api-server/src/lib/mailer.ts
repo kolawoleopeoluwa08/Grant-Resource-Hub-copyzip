@@ -9,9 +9,26 @@ const transporter = nodemailer.createTransport({
 });
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER || '';
-const FROM = `"Hope Foundation" <${process.env.GMAIL_USER}>`;
+const FROM = `"Grant Resource Hub" <${process.env.GMAIL_USER}>`;
+
+const grantLabels: Record<string, string> = {
+  tuition_fees: 'Tuition & Enrollment Fees',
+  books_supplies: 'Textbooks & Academic Supplies',
+  housing_meals: 'Campus Housing & Meal Plans',
+  technology_equipment: 'Technology & Equipment',
+  research_fees: 'Research & Laboratory Fees',
+  study_abroad: 'Study Abroad Program',
+  general_education: 'General Educational Support',
+};
+
+const paymentLabels: Record<string, string> = {
+  check: 'Check (mailed)',
+  wire_transfer: 'Wire Transfer',
+  moneygram: 'MoneyGram',
+};
 
 export async function sendApplicationEmail(data: {
+  applicationId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -25,38 +42,21 @@ export async function sendApplicationEmail(data: {
   annualIncome?: number | null;
   description: string;
   paymentMethod?: string | null;
-  id: number;
   submittedAt: string;
 }) {
-  const grantLabels: Record<string, string> = {
-    tuition_fees: 'Tuition & Enrollment Fees',
-    books_supplies: 'Textbooks & Academic Supplies',
-    housing_meals: 'Campus Housing & Meal Plans',
-    technology_equipment: 'Technology & Equipment',
-    research_fees: 'Research & Laboratory Fees',
-    study_abroad: 'Study Abroad Program',
-    general_education: 'General Educational Support',
-  };
-
-  const paymentLabels: Record<string, string> = {
-    check: 'Check (mailed)',
-    wire_transfer: 'Wire Transfer',
-    moneygram: 'MoneyGram',
-  };
-
   const html = `
     <div style="font-family: Georgia, serif; max-width: 680px; margin: 0 auto; background: #f8f7f4; padding: 32px;">
       <div style="background: #1a3a5c; color: white; padding: 28px 32px; border-radius: 12px 12px 0 0;">
-        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Hope Foundation</h1>
+        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Grant Resource Hub</h1>
         <p style="margin: 4px 0 0; font-size: 13px; color: #c9a84c; text-transform: uppercase; letter-spacing: 1px;">
-          Student Aid Resource Program — New Application
+          New Grant Application Received
         </p>
       </div>
       <div style="background: white; padding: 32px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
         <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
           <tr style="background: #f1f5f9;">
             <th colspan="2" style="padding: 10px 14px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-              Application #${data.id} — ${new Date(data.submittedAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
+              Application ID: ${data.applicationId} — ${new Date(data.submittedAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
             </th>
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; width: 40%; border-bottom: 1px solid #f1f5f9;">Full Name</td>
@@ -95,7 +95,7 @@ export async function sendApplicationEmail(data: {
         </div>
 
         <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
-          Hope Foundation — Student Aid Resource Program &nbsp;|&nbsp; grants@hopefoundation.org
+          Grant Resource Hub — Student Aid Resource Program
         </div>
       </div>
     </div>
@@ -104,7 +104,57 @@ export async function sendApplicationEmail(data: {
   await transporter.sendMail({
     from: FROM,
     to: NOTIFY_EMAIL,
-    subject: `📋 New Grant Application #${data.id} — ${data.firstName} ${data.lastName} | $${Number(data.requestedAmount).toLocaleString()}`,
+    subject: `New Grant Application Received — ${data.firstName} ${data.lastName} | ${data.applicationId}`,
+    html,
+  });
+}
+
+export async function sendApplicantConfirmationEmail(data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  applicationId: string;
+  submittedAt: string;
+}) {
+  const html = `
+    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #f8f7f4; padding: 32px;">
+      <div style="background: #1a3a5c; color: white; padding: 28px 32px; border-radius: 12px 12px 0 0;">
+        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Grant Resource Hub</h1>
+        <p style="margin: 4px 0 0; font-size: 13px; color: #c9a84c; text-transform: uppercase; letter-spacing: 1px;">
+          Application Confirmation
+        </p>
+      </div>
+      <div style="background: white; padding: 32px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+        <p style="font-size: 16px; color: #1e293b; margin-top: 0;">Hello ${data.firstName} ${data.lastName},</p>
+        <p style="font-size: 15px; color: #475569; line-height: 1.7;">
+          Your grant application has been successfully received. Our review team will evaluate your submission and contact you with updates.
+        </p>
+
+        <div style="margin: 28px 0; padding: 20px 24px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; text-align: center;">
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Your Application ID</div>
+          <div style="font-size: 26px; font-weight: bold; color: #1a3a5c; letter-spacing: 2px; font-family: monospace;">${data.applicationId}</div>
+          <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Please save this ID for your records</div>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b; line-height: 1.7;">
+          Submitted on: <strong>${new Date(data.submittedAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</strong>
+        </p>
+
+        <p style="font-size: 15px; color: #475569; line-height: 1.7;">
+          Thank you for applying to the Grant Resource Hub Student Aid Resource Program. We review applications within <strong>5–7 business days</strong>.
+        </p>
+
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
+          Grant Resource Hub — Student Aid Resource Program
+        </div>
+      </div>
+    </div>
+  `;
+
+  await transporter.sendMail({
+    from: FROM,
+    to: data.email,
+    subject: `Application Received - Grant Resource Hub [${data.applicationId}]`,
     html,
   });
 }
@@ -121,7 +171,7 @@ export async function sendContactEmail(data: {
   const html = `
     <div style="font-family: Georgia, serif; max-width: 680px; margin: 0 auto; background: #f8f7f4; padding: 32px;">
       <div style="background: #1a3a5c; color: white; padding: 28px 32px; border-radius: 12px 12px 0 0;">
-        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Hope Foundation</h1>
+        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Grant Resource Hub</h1>
         <p style="margin: 4px 0 0; font-size: 13px; color: #c9a84c; text-transform: uppercase; letter-spacing: 1px;">
           New Contact Form Submission
         </p>
@@ -149,7 +199,7 @@ export async function sendContactEmail(data: {
         </div>
 
         <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
-          Hope Foundation — Student Aid Resource Program &nbsp;|&nbsp; grants@hopefoundation.org
+          Grant Resource Hub — Student Aid Resource Program
         </div>
       </div>
     </div>

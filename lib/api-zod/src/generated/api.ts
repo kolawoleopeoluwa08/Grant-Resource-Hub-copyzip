@@ -47,6 +47,7 @@ export const SubmitApplicationBody = zod.object({
 
 export const SubmitApplicationResponse = zod.object({
   "id": zod.number(),
+  "applicationId": zod.string().nullish(),
   "firstName": zod.string(),
   "lastName": zod.string(),
   "email": zod.string(),
@@ -60,7 +61,7 @@ export const SubmitApplicationResponse = zod.object({
   "gpa": zod.number().nullish(),
   "annualIncome": zod.number().nullish(),
   "paymentMethod": zod.string().nullish(),
-  "status": zod.enum(['pending', 'under_review', 'approved', 'rejected']),
+  "status": zod.enum(['pending', 'reviewing', 'approved', 'rejected']),
   "submittedAt": zod.string()
 })
 

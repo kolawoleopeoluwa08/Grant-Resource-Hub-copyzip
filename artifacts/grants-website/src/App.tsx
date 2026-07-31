@@ -11,19 +11,35 @@ import Testimonials from '@/pages/testimonials';
 import Contact from '@/pages/contact';
 import NotFound from '@/pages/not-found';
 
+// Admin pages (no Layout wrapper)
+import AdminLogin from '@/pages/admin/login';
+import AdminDashboard from '@/pages/admin/dashboard';
+
 const queryClient = new QueryClient();
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/apply" component={Apply} />
-        <Route path="/testimonials" component={Testimonials} />
-        <Route path="/contact" component={Contact} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      {/* Admin routes — no navbar/footer */}
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin">
+        {() => { window.location.replace(window.location.pathname.replace(/\/admin$/, '/admin/login')); return null; }}
+      </Route>
+
+      {/* Public routes — with Layout */}
+      <Route>
+        <Layout>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/apply" component={Apply} />
+            <Route path="/testimonials" component={Testimonials} />
+            <Route path="/contact" component={Contact} />
+            <Route component={NotFound} />
+          </Switch>
+        </Layout>
+      </Route>
+    </Switch>
   );
 }
 

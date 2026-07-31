@@ -9,11 +9,18 @@ import {
   GetStatsResponse,
 } from "@workspace/api-zod";
 import { eq, count, sum } from "drizzle-orm";
-import { sendApplicationEmail, sendContactEmail } from "../lib/mailer.js";
+import { sendApplicationEmail, sendApplicantConfirmationEmail, sendContactEmail } from "../lib/mailer.js";
 
 const BASE_APPLICATIONS = 2480;
 
 const router: IRouter = Router();
+
+function generateApplicationId(): string {
+  const now = new Date();
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `GRH-${date}-${rand}`;
+}
 
 // POST /applications
 router.post("/applications", async (req, res): Promise<void> => {
@@ -24,9 +31,12 @@ router.post("/applications", async (req, res): Promise<void> => {
   }
 
   const data = parsed.data;
+  const applicationId = generateApplicationId();
+
   const [application] = await db
     .insert(applicationsTable)
     .values({
+      applicationId,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
@@ -54,9 +64,11 @@ router.post("/applications", async (req, res): Promise<void> => {
 
   res.status(201).json(response);
 
-  // Send email notification (non-blocking)
+  // Send emails (non-blocking)
+  const submittedAt = application.submittedAt.toISOString();
+
   sendApplicationEmail({
-    id: application.id,
+    applicationId,
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,
@@ -70,8 +82,16 @@ router.post("/applications", async (req, res): Promise<void> => {
     annualIncome: data.annualIncome ?? null,
     description: data.description,
     paymentMethod: data.paymentMethod ?? null,
-    submittedAt: application.submittedAt.toISOString(),
-  }).catch((err) => console.error("[mailer] application email failed:", err));
+    submittedAt,
+  }).catch((err) => console.error("[mailer] admin notification failed:", err));
+
+  sendApplicantConfirmationEmail({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    applicationId,
+    submittedAt,
+  }).catch((err) => console.error("[mailer] applicant confirmation failed:", err));
 });
 
 // GET /testimonials
@@ -125,7 +145,6 @@ router.post("/contact", async (req, res): Promise<void> => {
 
   res.status(201).json(response);
 
-  // Send email notification (non-blocking)
   sendContactEmail({
     id: message.id,
     name: data.name,

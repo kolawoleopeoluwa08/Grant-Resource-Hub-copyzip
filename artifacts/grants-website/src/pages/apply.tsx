@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion } from 'framer-motion';
-import { GraduationCap, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
+import { GraduationCap, CheckCircle2, AlertCircle, CreditCard, Loader2 } from 'lucide-react';
 import { useSubmitApplication, ApplicationInputGrantType, ApplicationInputYearOfStudy, ApplicationInputPaymentMethod } from '@workspace/api-client-react';
 
 import { Button } from '@/components/ui/button';
@@ -75,7 +75,7 @@ const paymentMethodLabels: Record<string, { label: string; desc: string }> = {
 
 export default function Apply() {
   const [_, setLocation] = useLocation();
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null);
   const submitApp = useSubmitApplication();
 
   const form = useForm<FormValues>({
@@ -96,14 +96,15 @@ export default function Apply() {
 
   const onSubmit = (data: FormValues) => {
     submitApp.mutate({ data }, {
-      onSuccess: () => {
-        setIsSubmitted(true);
+      onSuccess: (response) => {
+        setSubmittedApplicationId((response as { applicationId?: string | null }).applicationId ?? null);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     });
   };
 
-  if (isSubmitted) {
+  if (submittedApplicationId !== null || (submitApp.isSuccess && !submitApp.isPending)) {
+    const appId = submittedApplicationId || 'GRH-RECEIVED';
     return (
       <div className="min-h-[80dvh] flex items-center justify-center bg-muted/30 py-20 px-4">
         <motion.div
@@ -115,11 +116,18 @@ export default function Apply() {
             <CheckCircle2 className="h-12 w-12" />
           </div>
           <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Application Received</h1>
-          <p className="text-xl text-muted-foreground mb-4 leading-relaxed">
-            Thank you for applying to the Hope Foundation Student Aid Resource Program.
+          <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
+            Your application has been successfully received.
           </p>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 mb-8">
+            <p className="text-sm text-muted-foreground uppercase tracking-widest mb-2 font-semibold">Your Application ID</p>
+            <p className="text-3xl font-mono font-bold text-primary tracking-wider">{appId}</p>
+            <p className="text-sm text-muted-foreground mt-2">Please save this for your records. A confirmation email has been sent to you.</p>
+          </div>
+
           <p className="text-base text-muted-foreground mb-10 leading-relaxed">
-            Your application has been securely submitted to our academic review committee. You will receive a confirmation email shortly, and a decision within <strong>5–7 business days</strong>.
+            Our review team will evaluate your submission and contact you with updates within <strong>5–7 business days</strong>.
           </p>
           <Button
             size="lg"
@@ -153,7 +161,7 @@ export default function Apply() {
             Student Grant Application
           </h1>
           <p className="text-secondary font-semibold mb-4 tracking-wide uppercase text-sm">
-            Hope Foundation — Student Aid Resource Program
+            Grant Resource Hub — Student Aid Resource Program
           </p>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             All information you provide is strictly confidential and used only by our academic review committee to assess your eligibility for educational grant funding.
@@ -175,7 +183,11 @@ export default function Apply() {
                   <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-bold">Submission Failed</h4>
-                    <p className="text-sm opacity-90">There was an error submitting your application. Please try again or contact us directly.</p>
+                    <p className="text-sm opacity-90">
+                      {submitApp.error instanceof Error
+                        ? submitApp.error.message
+                        : 'There was an error submitting your application. Please try again or contact us directly.'}
+                    </p>
                   </div>
                 </div>
               )}
@@ -381,7 +393,12 @@ export default function Apply() {
                   className="w-full sm:w-auto min-w-[220px] h-14 text-lg font-bold"
                   disabled={submitApp.isPending}
                 >
-                  {submitApp.isPending ? 'Submitting...' : 'Submit Application'}
+                  {submitApp.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Submitting…
+                    </span>
+                  ) : 'Submit Application'}
                 </Button>
               </div>
 
