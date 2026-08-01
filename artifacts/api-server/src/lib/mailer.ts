@@ -1,14 +1,16 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST || 'smtp.zoho.com',
+  port: Number(process.env.SMTP_PORT) || 465,
+  secure: true, // SSL on port 465
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: process.env.SMTP_USER || 'support@hopefoundations.us',
+    pass: process.env.SMTP_PASSWORD,
   },
 });
 
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER || '';
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || 'support@hopefoundations.us';
 const FROM = `"Grant Resource Hub" <support@hopefoundations.us>`;
 
 const grantLabels: Record<string, string> = {

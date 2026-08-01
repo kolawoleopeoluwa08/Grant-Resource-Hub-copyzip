@@ -27,3 +27,6 @@ channel = "stable-25_05"
 [userenv.shared]
 GMAIL_USER = "Lindajohnsonkate01@gmail.com"
 NOTIFY_EMAIL = "Memphisnick200@gmail.com"
+SMTP_HOST = "smtp.zoho.com"
+SMTP_PORT = "465"
+SMTP_USER = "support@hopefoundations.us"
