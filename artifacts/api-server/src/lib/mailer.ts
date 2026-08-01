@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER || '';
-const FROM = `"Grant Resource Hub" <${process.env.GMAIL_USER}>`;
+const FROM = `"Grant Resource Hub" <support@hopefoundations.us>`;
 
 const grantLabels: Record<string, string> = {
   tuition_fees: 'Tuition & Enrollment Fees',

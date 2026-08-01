@@ -61,7 +61,7 @@ router.get('/applications', requireAdmin, async (req, res): Promise<void> => {
 
 // GET /admin/applications/:id — get single application
 router.get('/applications/:id', requireAdmin, async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params['id']), 10);
   if (isNaN(id)) {
     res.status(400).json({ error: 'Invalid ID' });
     return;
@@ -100,7 +100,7 @@ router.get('/applications/:id', requireAdmin, async (req, res): Promise<void> =>
 
 // PATCH /admin/applications/:id/status — update status
 router.patch('/applications/:id/status', requireAdmin, async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params['id']), 10);
   if (isNaN(id)) {
     res.status(400).json({ error: 'Invalid ID' });
     return;

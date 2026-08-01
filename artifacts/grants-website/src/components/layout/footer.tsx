@@ -61,7 +61,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-primary-foreground/80 text-sm">
                 <Mail className="h-5 w-5 text-secondary shrink-0" />
-                <span>grants@hopefoundation.org</span>
+                <span>support@hopefoundations.us</span>
               </li>
             </ul>
           </div>

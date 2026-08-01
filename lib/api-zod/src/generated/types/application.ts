@@ -9,6 +9,8 @@ import type { ApplicationStatus } from './applicationStatus';
 
 export interface Application {
   id: number;
+  /** @nullable */
+  applicationId?: string | null;
   firstName: string;
   lastName: string;
   email: string;

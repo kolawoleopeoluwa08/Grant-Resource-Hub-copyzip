@@ -187,6 +187,8 @@ components:
       properties:
         id:
           type: number
+        applicationId:
+          type: ["string", "null"]
         firstName:
           type: string
         lastName:
@@ -215,7 +217,7 @@ components:
           type: ["string", "null"]
         status:
           type: string
-          enum: [pending, under_review, approved, rejected]
+          enum: [pending, reviewing, approved, rejected]
         submittedAt:
           type: string
 

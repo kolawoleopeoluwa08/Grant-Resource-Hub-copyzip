@@ -1,27 +1,38 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
 
-const SECRET = () => process.env.SESSION_SECRET || 'fallback-dev-secret-change-me';
+function getSecret(): string {
+  const s = process.env.SESSION_SECRET;
+  if (!s) throw new Error('SESSION_SECRET environment variable is required for admin auth');
+  return s;
+}
 
 export function signAdminToken(payload: Record<string, unknown>): string {
+  const secret = getSecret();
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
-  const body = Buffer.from(JSON.stringify({ ...payload, iat: Date.now(), exp: Date.now() + 24 * 60 * 60 * 1000 })).toString('base64url');
-  const sig = createHmac('sha256', SECRET()).update(`${header}.${body}`).digest('base64url');
+  const body = Buffer.from(
+    JSON.stringify({ ...payload, role: 'admin', iat: Date.now(), exp: Date.now() + 24 * 60 * 60 * 1000 })
+  ).toString('base64url');
+  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
 export function verifyAdminToken(token: string): Record<string, unknown> | null {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) return null; // reject if not configured
+
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
     const [header, body, sig] = parts;
-    const expectedSig = createHmac('sha256', SECRET()).update(`${header}.${body}`).digest('base64url');
+    const expectedSig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
     const sigBuf = Buffer.from(sig, 'base64url');
     const expectedBuf = Buffer.from(expectedSig, 'base64url');
     if (sigBuf.length !== expectedBuf.length) return null;
     if (!timingSafeEqual(sigBuf, expectedBuf)) return null;
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as Record<string, unknown>;
     if (typeof payload.exp === 'number' && Date.now() > payload.exp) return null;
+    if (payload.role !== 'admin') return null; // must have admin role claim
     return payload;
   } catch {
     return null;

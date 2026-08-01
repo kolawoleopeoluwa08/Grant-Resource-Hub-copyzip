@@ -71,13 +71,15 @@ export type ApplicationStatus = typeof ApplicationStatus[keyof typeof Applicatio
 
 export const ApplicationStatus = {
   pending: 'pending',
-  under_review: 'under_review',
+  reviewing: 'reviewing',
   approved: 'approved',
   rejected: 'rejected',
 } as const;
 
 export interface Application {
   id: number;
+  /** @nullable */
+  applicationId?: string | null;
   firstName: string;
   lastName: string;
   email: string;
