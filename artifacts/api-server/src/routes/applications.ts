@@ -83,7 +83,9 @@ router.post("/applications", async (req, res): Promise<void> => {
     description: data.description,
     paymentMethod: data.paymentMethod ?? null,
     submittedAt,
-  }).catch((err) => console.error("[mailer] admin notification failed:", err));
+  })
+    .then(() => console.log(`[mailer] admin notification sent for ${applicationId}`))
+    .catch((err) => console.error("[mailer] admin notification failed:", err));
 
   sendApplicantConfirmationEmail({
     firstName: data.firstName,
@@ -91,7 +93,9 @@ router.post("/applications", async (req, res): Promise<void> => {
     email: data.email,
     applicationId,
     submittedAt,
-  }).catch((err) => console.error("[mailer] applicant confirmation failed:", err));
+  })
+    .then(() => console.log(`[mailer] applicant confirmation sent to ${data.email} for ${applicationId}`))
+    .catch((err) => console.error("[mailer] applicant confirmation failed:", err));
 });
 
 // GET /testimonials
