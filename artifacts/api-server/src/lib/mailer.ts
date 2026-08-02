@@ -1,30 +1,32 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.zoho.com",
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER || "support@hopefoundations.us",
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+if (!process.env.RESEND_API_KEY) {
+  throw new Error(
+    "RESEND_API_KEY environment variable is required but was not provided.",
+  );
+}
 
-// TEMPORARY DEBUG LOGS
-console.log("========== SMTP CONFIG ==========");
-console.log("SMTP_HOST:", process.env.SMTP_HOST);
-console.log("SMTP_PORT:", process.env.SMTP_PORT);
-console.log("SMTP_USER:", process.env.SMTP_USER);
-console.log("SMTP_PASSWORD exists:", !!process.env.SMTP_PASSWORD);
-console.log("=================================");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const NOTIFY_EMAIL =
-  process.env.NOTIFY_EMAIL ||
-  process.env.SMTP_USER ||
-  "support@hopefoundations.us";
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "support@hopefoundations.us";
+const FROM = `"Grant Resource Hub" <support@hopefoundations.us>`;
 
-const FROM =
-  process.env.SMTP_FROM || `"Grant Resource Hub" <support@hopefoundations.us>`;
+async function send(opts: { to: string; subject: string; html: string }) {
+  const { data, error } = await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: opts.subject,
+    html: opts.html,
+  });
+
+  if (error) {
+    // Throw so the existing .catch((err) => console.error(...)) call sites in
+    // applications.ts keep working exactly as before.
+    throw new Error(`Resend error: ${error.name} - ${error.message}`);
+  }
+
+  return data;
+}
 
 const grantLabels: Record<string, string> = {
   tuition_fees: "Tuition & Enrollment Fees",
@@ -124,8 +126,7 @@ export async function sendApplicationEmail(data: {
     </div>
   `;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to: NOTIFY_EMAIL,
     subject: `New Grant Application Received — ${data.firstName} ${data.lastName} | ${data.applicationId}`,
     html,
@@ -174,8 +175,7 @@ export async function sendApplicantConfirmationEmail(data: {
     </div>
   `;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to: data.email,
     subject: `Application Received - Grant Resource Hub [${data.applicationId}]`,
     html,
@@ -232,8 +232,7 @@ export async function sendContactEmail(data: {
     </div>
   `;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to: NOTIFY_EMAIL,
     subject: `✉️ Contact Form: "${data.subject}" from ${data.name}`,
     html,
