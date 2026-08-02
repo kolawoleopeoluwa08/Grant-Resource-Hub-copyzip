@@ -1,32 +1,45 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.zoho.com',
+  host: process.env.SMTP_HOST || "smtp.zoho.com",
   port: Number(process.env.SMTP_PORT) || 465,
-  secure: true, // SSL on port 465
+  secure: true,
   auth: {
-    user: process.env.SMTP_USER || 'support@hopefoundations.us',
+    user: process.env.SMTP_USER || "support@hopefoundations.us",
     pass: process.env.SMTP_PASSWORD,
   },
 });
 
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || 'support@hopefoundations.us';
-const FROM = `"Grant Resource Hub" <support@hopefoundations.us>`;
+// TEMPORARY DEBUG LOGS
+console.log("========== SMTP CONFIG ==========");
+console.log("SMTP_HOST:", process.env.SMTP_HOST);
+console.log("SMTP_PORT:", process.env.SMTP_PORT);
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("SMTP_PASSWORD exists:", !!process.env.SMTP_PASSWORD);
+console.log("=================================");
+
+const NOTIFY_EMAIL =
+  process.env.NOTIFY_EMAIL ||
+  process.env.SMTP_USER ||
+  "support@hopefoundations.us";
+
+const FROM =
+  process.env.SMTP_FROM || `"Grant Resource Hub" <support@hopefoundations.us>`;
 
 const grantLabels: Record<string, string> = {
-  tuition_fees: 'Tuition & Enrollment Fees',
-  books_supplies: 'Textbooks & Academic Supplies',
-  housing_meals: 'Campus Housing & Meal Plans',
-  technology_equipment: 'Technology & Equipment',
-  research_fees: 'Research & Laboratory Fees',
-  study_abroad: 'Study Abroad Program',
-  general_education: 'General Educational Support',
+  tuition_fees: "Tuition & Enrollment Fees",
+  books_supplies: "Textbooks & Academic Supplies",
+  housing_meals: "Campus Housing & Meal Plans",
+  technology_equipment: "Technology & Equipment",
+  research_fees: "Research & Laboratory Fees",
+  study_abroad: "Study Abroad Program",
+  general_education: "General Educational Support",
 };
 
 const paymentLabels: Record<string, string> = {
-  check: 'Check (mailed)',
-  wire_transfer: 'Wire Transfer',
-  moneygram: 'MoneyGram',
+  check: "Check (mailed)",
+  wire_transfer: "Wire Transfer",
+  moneygram: "MoneyGram",
 };
 
 export async function sendApplicationEmail(data: {
@@ -58,7 +71,7 @@ export async function sendApplicationEmail(data: {
         <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
           <tr style="background: #f1f5f9;">
             <th colspan="2" style="padding: 10px 14px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-              Application ID: ${data.applicationId} — ${new Date(data.submittedAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
+              Application ID: ${data.applicationId} — ${new Date(data.submittedAt).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}
             </th>
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; width: 40%; border-bottom: 1px solid #f1f5f9;">Full Name</td>
@@ -76,19 +89,27 @@ export async function sendApplicationEmail(data: {
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.institution}</td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Year of Study</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.yearOfStudy.charAt(0).toUpperCase() + data.yearOfStudy.slice(1)}</td></tr>
-          ${data.gpa != null ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">GPA</td>
-              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.gpa.toFixed(2)} / 4.0</td></tr>` : ''}
+          ${
+            data.gpa != null
+              ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">GPA</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.gpa.toFixed(2)} / 4.0</td></tr>`
+              : ""
+          }
           <tr style="background: #f8fafc;">
             <th colspan="2" style="padding: 10px 14px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Grant Request</th>
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Grant Category</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${grantLabels[data.grantType] || data.grantType}</td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Requested Amount</td>
-              <td style="padding: 10px 14px; color: #1e293b; font-weight: bold; border-bottom: 1px solid #f1f5f9;">$${Number(data.requestedAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td></tr>
-          ${data.annualIncome != null ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Annual Income</td>
-              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">$${Number(data.annualIncome).toLocaleString('en-US')}</td></tr>` : ''}
+              <td style="padding: 10px 14px; color: #1e293b; font-weight: bold; border-bottom: 1px solid #f1f5f9;">$${Number(data.requestedAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td></tr>
+          ${
+            data.annualIncome != null
+              ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Annual Income</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">$${Number(data.annualIncome).toLocaleString("en-US")}</td></tr>`
+              : ""
+          }
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Payment Method</td>
-              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.paymentMethod ? (paymentLabels[data.paymentMethod] || data.paymentMethod) : 'Not specified'}</td></tr>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.paymentMethod ? paymentLabels[data.paymentMethod] || data.paymentMethod : "Not specified"}</td></tr>
         </table>
 
         <div style="margin-top: 24px; padding: 16px 20px; background: #f1f5f9; border-left: 4px solid #1a3a5c; border-radius: 4px;">
@@ -139,7 +160,7 @@ export async function sendApplicantConfirmationEmail(data: {
         </div>
 
         <p style="font-size: 14px; color: #64748b; line-height: 1.7;">
-          Submitted on: <strong>${new Date(data.submittedAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</strong>
+          Submitted on: <strong>${new Date(data.submittedAt).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}</strong>
         </p>
 
         <p style="font-size: 15px; color: #475569; line-height: 1.7;">
@@ -182,15 +203,19 @@ export async function sendContactEmail(data: {
         <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
           <tr style="background: #f1f5f9;">
             <th colspan="2" style="padding: 10px 14px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-              Message #${data.id} — ${new Date(data.createdAt).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
+              Message #${data.id} — ${new Date(data.createdAt).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}
             </th>
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; width: 40%; border-bottom: 1px solid #f1f5f9;">Name</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.name}</td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Email</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${data.email}" style="color: #1a3a5c;">${data.email}</a></td></tr>
-          ${data.phone ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Phone</td>
-              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.phone}</td></tr>` : ''}
+          ${
+            data.phone
+              ? `<tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Phone</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.phone}</td></tr>`
+              : ""
+          }
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Subject</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.subject}</td></tr>
         </table>
