@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { motion } from "framer-motion";
+import { ShieldCheck, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 export default function AdminLogin() {
   const [_, setLocation] = useLocation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,20 +21,23 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const res = await fetch(`${BASE}/api/admin/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError((body as { error?: string }).error || 'Login failed. Check your credentials.');
+        setError(
+          (body as { error?: string }).error ||
+            "Login failed. Check your credentials.",
+        );
         return;
       }
-      const { token } = await res.json() as { token: string };
-      localStorage.setItem('admin_token', token);
-      setLocation('/admin/dashboard');
+      const { token } = (await res.json()) as { token: string };
+      localStorage.setItem("admin_token", token);
+      setLocation("/admin/dashboard");
     } catch {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -51,8 +54,12 @@ export default function AdminLogin() {
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
             <ShieldCheck className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Admin Login</h1>
-          <p className="text-muted-foreground text-sm mt-1">Grant Resource Hub</p>
+          <h1 className="text-2xl font-serif font-bold text-foreground">
+            Admin Login
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Grant Resource Hub
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -89,12 +96,18 @@ export default function AdminLogin() {
             />
           </div>
 
-          <Button type="submit" className="w-full h-12 font-bold" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full h-12 font-bold"
+            disabled={loading}
+          >
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" /> Signing in…
               </span>
-            ) : 'Sign In'}
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </form>
       </motion.div>
