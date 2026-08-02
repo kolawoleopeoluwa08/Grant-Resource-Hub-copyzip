@@ -9,7 +9,7 @@ if (!process.env.RESEND_API_KEY) {
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "support@hopefoundations.us";
-const FROM = `"Grant Resource Hub" <support@hopefoundations.us>`;
+const FROM = `"Hope Foundation Support" <support@hopefoundations.us>`;
 
 async function send(opts: { to: string; subject: string; html: string }) {
   const { data, error } = await resend.emails.send({
@@ -177,7 +177,7 @@ export async function sendApplicantConfirmationEmail(data: {
 
   await send({
     to: data.email,
-    subject: `Application Received - Grant Resource Hub [${data.applicationId}]`,
+    subject: `Application Received (${data.applicationId})`,
     html,
   });
 }
