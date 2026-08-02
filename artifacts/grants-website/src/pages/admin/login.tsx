@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 export default function AdminLogin() {
   const [_, setLocation] = useLocation();
@@ -58,7 +58,7 @@ export default function AdminLogin() {
             Admin Login
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Hope Foundation Hub
+            Grant Resource Hub
           </p>
         </div>
 
