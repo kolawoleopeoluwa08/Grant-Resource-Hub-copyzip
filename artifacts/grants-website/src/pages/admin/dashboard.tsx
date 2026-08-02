@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 type Status = "pending" | "reviewing" | "approved" | "rejected";
 
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-3">
           <LayoutDashboard className="h-5 w-5 text-secondary" />
           <span className="font-serif font-bold text-lg">
-            Grant Resource Hub
+            Hope Foundation Hub
           </span>
           <span className="text-primary-foreground/50 text-sm hidden sm:block">
             — Admin Dashboard
