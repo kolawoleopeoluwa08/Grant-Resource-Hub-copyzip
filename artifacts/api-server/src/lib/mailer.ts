@@ -165,7 +165,7 @@ export async function sendApplicantConfirmationEmail(data: {
         </p>
 
         <p style="font-size: 15px; color: #475569; line-height: 1.7;">
-          Thank you for applying to the Grant Resource Hub Student Aid Resource Program. We review applications within <strong>5–7 business days</strong>.
+          Thank you for applying to the Grant Resource Hub Student Aid Resource Program. We review applications within <strong>1–2 business days</strong>.
         </p>
 
         <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
