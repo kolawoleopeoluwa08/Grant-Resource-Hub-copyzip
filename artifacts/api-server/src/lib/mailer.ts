@@ -51,8 +51,12 @@ export async function sendApplicationEmail(data: {
   email: string;
   phone: string;
   address: string;
+  age: number;
+  gender: string;
   institution: string;
   yearOfStudy: string;
+  studentId: string;
+  courseOfStudy: string;
   grantType: string;
   requestedAmount: number;
   gpa?: number | null;
@@ -61,6 +65,13 @@ export async function sendApplicationEmail(data: {
   paymentMethod?: string | null;
   submittedAt: string;
 }) {
+  const genderLabels: Record<string, string> = {
+    male: "Male",
+    female: "Female",
+    other: "Other",
+    prefer_not_to_say: "Prefer not to say",
+  };
+
   const html = `
     <div style="font-family: Georgia, serif; max-width: 680px; margin: 0 auto; background: #f8f7f4; padding: 32px;">
       <div style="background: #1a3a5c; color: white; padding: 28px 32px; border-radius: 12px 12px 0 0;">
@@ -78,6 +89,10 @@ export async function sendApplicationEmail(data: {
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; width: 40%; border-bottom: 1px solid #f1f5f9;">Full Name</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.firstName} ${data.lastName}</td></tr>
+          <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Age</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.age}</td></tr>
+          <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Gender</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${genderLabels[data.gender] || data.gender}</td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Email</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${data.email}" style="color: #1a3a5c;">${data.email}</a></td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Phone</td>
@@ -89,6 +104,10 @@ export async function sendApplicationEmail(data: {
           </tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Institution</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.institution}</td></tr>
+          <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Student ID Number</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.studentId}</td></tr>
+          <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Course of Study</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.courseOfStudy}</td></tr>
           <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">Year of Study</td>
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.yearOfStudy.charAt(0).toUpperCase() + data.yearOfStudy.slice(1)}</td></tr>
           ${
@@ -97,6 +116,8 @@ export async function sendApplicationEmail(data: {
               <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">${data.gpa.toFixed(2)} / 4.0</td></tr>`
               : ""
           }
+          <tr><td style="padding: 10px 14px; font-weight: bold; color: #334155; border-bottom: 1px solid #f1f5f9;">ID Verification</td>
+              <td style="padding: 10px 14px; color: #1e293b; border-bottom: 1px solid #f1f5f9;">Front &amp; back of ID uploaded — view in the admin dashboard</td></tr>
           <tr style="background: #f8fafc;">
             <th colspan="2" style="padding: 10px 14px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Grant Request</th>
           </tr>

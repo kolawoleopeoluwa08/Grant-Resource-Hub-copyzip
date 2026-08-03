@@ -15,6 +15,13 @@
       "when": 1785506300000,
       "tag": "0001_add_application_id_fix_status",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785506400000,
+      "tag": "0002_add_extended_application_fields",
+      "breakpoints": true
     }
   ]
 }

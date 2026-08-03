@@ -16,6 +16,7 @@ import {
   ApplicationInputGrantType,
   ApplicationInputYearOfStudy,
   ApplicationInputPaymentMethod,
+  ApplicationInputGender,
 } from "@workspace/api-client-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,18 +39,38 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+const MAX_ID_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   address: z.string().min(5, "Please enter your full address"),
+  age: z.coerce
+    .number()
+    .min(16, "You must be at least 16")
+    .max(100, "Please enter a valid age"),
+  gender: z.nativeEnum(ApplicationInputGender, {
+    required_error: "Please select your gender",
+  }),
   institution: z
     .string()
     .min(3, "Please enter your college or university name"),
   yearOfStudy: z.nativeEnum(ApplicationInputYearOfStudy, {
     required_error: "Please select your year of study",
   }),
+  studentId: z.string().min(1, "Please enter your student ID number"),
+  courseOfStudy: z.string().min(2, "Please enter your course of study"),
   grantType: z.nativeEnum(ApplicationInputGrantType, {
     required_error: "Please select a grant category",
   }),
@@ -68,6 +89,12 @@ const formSchema = z.object({
   paymentMethod: z.nativeEnum(ApplicationInputPaymentMethod, {
     required_error: "Please select a payment receiving method",
   }),
+  idFrontImage: z
+    .instanceof(File, { message: "Please upload the front of your ID" })
+    .refine((f) => f.size <= MAX_ID_IMAGE_BYTES, "Image must be under 5MB"),
+  idBackImage: z
+    .instanceof(File, { message: "Please upload the back of your ID" })
+    .refine((f) => f.size <= MAX_ID_IMAGE_BYTES, "Image must be under 5MB"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -89,6 +116,13 @@ const yearOfStudyLabels: Record<string, string> = {
   senior: "Senior (4th Year)",
   graduate: "Graduate Student",
   doctorate: "Doctorate / PhD Candidate",
+};
+
+const genderLabels: Record<string, string> = {
+  male: "Male",
+  female: "Female",
+  other: "Other",
+  prefer_not_to_say: "Prefer not to say",
 };
 
 const paymentMethodLabels: Record<string, { label: string; desc: string }> = {
@@ -121,7 +155,10 @@ export default function Apply() {
       email: "",
       phone: "",
       address: "",
+      age: undefined,
       institution: "",
+      studentId: "",
+      courseOfStudy: "",
       requestedAmount: undefined,
       description: "",
       gpa: undefined,
@@ -129,9 +166,14 @@ export default function Apply() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
+    const [idFrontImage, idBackImage] = await Promise.all([
+      fileToBase64(data.idFrontImage),
+      fileToBase64(data.idBackImage),
+    ]);
+
     submitApp.mutate(
-      { data },
+      { data: { ...data, idFrontImage, idBackImage } },
       {
         onSuccess: (response) => {
           setSubmittedApplicationId(
@@ -345,14 +387,67 @@ export default function Apply() {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="age"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="16"
+                            max="100"
+                            placeholder="21"
+                            {...field}
+                            value={field.value ?? ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(genderLabels).map(
+                              ([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
               {/* Academic Information */}
               <div>
-                <h2 className="text-2xl font-serif font-bold text-foreground mb-6 pb-2 border-b border-border">
+                <h2 className="text-2xl font-serif font-bold text-foreground mb-2 pb-2 border-b border-border">
                   Academic Information
                 </h2>
+                <p className="text-sm text-muted-foreground italic mb-6">
+                  All academic information will be validated with the school
+                  authority.
+                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
                     <FormField
@@ -375,6 +470,35 @@ export default function Apply() {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="studentId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Student ID Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 40219873" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courseOfStudy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Course of Study</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g. Computer Science"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="yearOfStudy"
@@ -428,6 +552,48 @@ export default function Apply() {
                         </FormControl>
                         <FormDescription>
                           Your most recent cumulative GPA on a 4.0 scale.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="idFrontImage"
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <FormItem>
+                        <FormLabel>Upload ID (Front)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => onChange(e.target.files?.[0])}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Front of your student or government-issued ID.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="idBackImage"
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <FormItem>
+                        <FormLabel>Upload ID (Back)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => onChange(e.target.files?.[0])}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Back of your student or government-issued ID.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

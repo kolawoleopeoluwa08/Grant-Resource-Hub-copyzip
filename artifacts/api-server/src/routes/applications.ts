@@ -1,5 +1,10 @@
 import { Router, type IRouter } from "express";
-import { db, applicationsTable, testimonialsTable, contactMessagesTable } from "@workspace/db";
+import {
+  db,
+  applicationsTable,
+  testimonialsTable,
+  contactMessagesTable,
+} from "@workspace/db";
 import {
   SubmitApplicationBody,
   SubmitApplicationResponse,
@@ -9,7 +14,11 @@ import {
   GetStatsResponse,
 } from "@workspace/api-zod";
 import { eq, count, sum } from "drizzle-orm";
-import { sendApplicationEmail, sendApplicantConfirmationEmail, sendContactEmail } from "../lib/mailer.js";
+import {
+  sendApplicationEmail,
+  sendApplicantConfirmationEmail,
+  sendContactEmail,
+} from "../lib/mailer.js";
 
 const BASE_APPLICATIONS = 2480;
 
@@ -17,7 +26,7 @@ const router: IRouter = Router();
 
 function generateApplicationId(): string {
   const now = new Date();
-  const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const date = now.toISOString().slice(0, 10).replace(/-/g, "");
   const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
   return `GRH-${date}-${rand}`;
 }
@@ -42,14 +51,21 @@ router.post("/applications", async (req, res): Promise<void> => {
       email: data.email,
       phone: data.phone,
       address: data.address,
+      age: data.age,
+      gender: data.gender,
       grantType: data.grantType,
       requestedAmount: String(data.requestedAmount),
       institution: data.institution,
       yearOfStudy: data.yearOfStudy,
+      studentId: data.studentId,
+      courseOfStudy: data.courseOfStudy,
       description: data.description,
       gpa: data.gpa != null ? String(data.gpa) : null,
-      annualIncome: data.annualIncome != null ? String(data.annualIncome) : null,
+      annualIncome:
+        data.annualIncome != null ? String(data.annualIncome) : null,
       paymentMethod: data.paymentMethod ?? null,
+      idFrontImage: data.idFrontImage,
+      idBackImage: data.idBackImage,
       status: "pending",
     })
     .returning();
@@ -58,7 +74,10 @@ router.post("/applications", async (req, res): Promise<void> => {
     ...application,
     requestedAmount: Number(application.requestedAmount),
     gpa: application.gpa != null ? Number(application.gpa) : null,
-    annualIncome: application.annualIncome != null ? Number(application.annualIncome) : null,
+    annualIncome:
+      application.annualIncome != null
+        ? Number(application.annualIncome)
+        : null,
     submittedAt: application.submittedAt.toISOString(),
   });
 
@@ -74,8 +93,12 @@ router.post("/applications", async (req, res): Promise<void> => {
     email: data.email,
     phone: data.phone,
     address: data.address,
+    age: data.age,
+    gender: data.gender,
     institution: data.institution,
     yearOfStudy: data.yearOfStudy,
+    studentId: data.studentId,
+    courseOfStudy: data.courseOfStudy,
     grantType: data.grantType,
     requestedAmount: data.requestedAmount,
     gpa: data.gpa ?? null,
@@ -84,7 +107,9 @@ router.post("/applications", async (req, res): Promise<void> => {
     paymentMethod: data.paymentMethod ?? null,
     submittedAt,
   })
-    .then(() => console.log(`[mailer] admin notification sent for ${applicationId}`))
+    .then(() =>
+      console.log(`[mailer] admin notification sent for ${applicationId}`),
+    )
     .catch((err) => console.error("[mailer] admin notification failed:", err));
 
   sendApplicantConfirmationEmail({
@@ -94,8 +119,14 @@ router.post("/applications", async (req, res): Promise<void> => {
     applicationId,
     submittedAt,
   })
-    .then(() => console.log(`[mailer] applicant confirmation sent to ${data.email} for ${applicationId}`))
-    .catch((err) => console.error("[mailer] applicant confirmation failed:", err));
+    .then(() =>
+      console.log(
+        `[mailer] applicant confirmation sent to ${data.email} for ${applicationId}`,
+      ),
+    )
+    .catch((err) =>
+      console.error("[mailer] applicant confirmation failed:", err),
+    );
 });
 
 // GET /testimonials
@@ -117,8 +148,8 @@ router.get("/testimonials", async (_req, res): Promise<void> => {
         rating: t.rating,
         avatarInitials: t.avatarInitials,
         createdAt: t.createdAt.toISOString(),
-      }))
-    )
+      })),
+    ),
   );
 });
 
@@ -162,7 +193,9 @@ router.post("/contact", async (req, res): Promise<void> => {
 
 // GET /stats
 router.get("/stats", async (_req, res): Promise<void> => {
-  const [dbCountRow] = await db.select({ count: count() }).from(applicationsTable);
+  const [dbCountRow] = await db
+    .select({ count: count() })
+    .from(applicationsTable);
   const dbCount = dbCountRow?.count ?? 0;
 
   const totalApplications = BASE_APPLICATIONS + dbCount;
@@ -182,7 +215,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
       approvedApplications,
       livesImpacted: approvedApplications,
       totalDisbursed,
-    })
+    }),
   );
 });
 

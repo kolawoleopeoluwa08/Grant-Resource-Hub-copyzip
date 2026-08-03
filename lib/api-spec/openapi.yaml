@@ -127,11 +127,17 @@ components:
         - email
         - phone
         - address
+        - age
+        - gender
         - grantType
         - requestedAmount
         - institution
         - yearOfStudy
+        - studentId
+        - courseOfStudy
         - description
+        - idFrontImage
+        - idBackImage
       properties:
         firstName:
           type: string
@@ -146,6 +152,11 @@ components:
           type: string
         address:
           type: string
+        age:
+          type: number
+        gender:
+          type: string
+          enum: [male, female, other, prefer_not_to_say]
         grantType:
           type: string
           enum: [tuition_fees, books_supplies, housing_meals, technology_equipment, research_fees, study_abroad, general_education]
@@ -157,6 +168,12 @@ components:
         yearOfStudy:
           type: string
           enum: [freshman, sophomore, junior, senior, graduate, doctorate]
+        studentId:
+          type: string
+          minLength: 1
+        courseOfStudy:
+          type: string
+          minLength: 1
         description:
           type: string
           minLength: 10
@@ -167,6 +184,12 @@ components:
         paymentMethod:
           type: string
           enum: [check, wire_transfer, moneygram]
+        idFrontImage:
+          type: string
+          description: Base64-encoded image data (front of student/government ID)
+        idBackImage:
+          type: string
+          description: Base64-encoded image data (back of student/government ID)
 
     Application:
       type: object
@@ -199,6 +222,10 @@ components:
           type: string
         address:
           type: string
+        age:
+          type: ["number", "null"]
+        gender:
+          type: ["string", "null"]
         grantType:
           type: string
         requestedAmount:
@@ -207,6 +234,10 @@ components:
           type: string
         yearOfStudy:
           type: string
+        studentId:
+          type: ["string", "null"]
+        courseOfStudy:
+          type: ["string", "null"]
         description:
           type: string
         gpa:
@@ -214,6 +245,10 @@ components:
         annualIncome:
           type: ["number", "null"]
         paymentMethod:
+          type: ["string", "null"]
+        idFrontImage:
+          type: ["string", "null"]
+        idBackImage:
           type: ["string", "null"]
         status:
           type: string

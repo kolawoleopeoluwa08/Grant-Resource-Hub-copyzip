@@ -5,9 +5,9 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { ApplicationInputGrantType } from './applicationInputGrantType';
-import type { ApplicationInputPaymentMethod } from './applicationInputPaymentMethod';
-import type { ApplicationInputYearOfStudy } from './applicationInputYearOfStudy';
+import type { ApplicationInputGrantType } from "./applicationInputGrantType";
+import type { ApplicationInputPaymentMethod } from "./applicationInputPaymentMethod";
+import type { ApplicationInputYearOfStudy } from "./applicationInputYearOfStudy";
 
 export interface ApplicationInput {
   /** @minLength 1 */
@@ -18,11 +18,17 @@ export interface ApplicationInput {
   email: string;
   phone: string;
   address: string;
+  age: number;
+  gender: ApplicationInputGender;
   grantType: ApplicationInputGrantType;
   requestedAmount: number;
   /** @minLength 1 */
   institution: string;
   yearOfStudy: ApplicationInputYearOfStudy;
+  /** @minLength 1 */
+  studentId: string;
+  /** @minLength 1 */
+  courseOfStudy: string;
   /** @minLength 10 */
   description: string;
   /** @nullable */
@@ -30,4 +36,14 @@ export interface ApplicationInput {
   /** @nullable */
   annualIncome?: number | null;
   paymentMethod?: ApplicationInputPaymentMethod;
+  /** Base64-encoded image data (front of student/government ID) */
+  idFrontImage: string;
+  /** Base64-encoded image data (back of student/government ID) */
+  idBackImage: string;
 }
+
+export type ApplicationInputGender =
+  | "male"
+  | "female"
+  | "other"
+  | "prefer_not_to_say";

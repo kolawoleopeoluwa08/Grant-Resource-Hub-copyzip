@@ -9,38 +9,48 @@ export interface HealthStatus {
   status: string;
 }
 
-export type ApplicationInputGrantType = typeof ApplicationInputGrantType[keyof typeof ApplicationInputGrantType];
-
+export type ApplicationInputGrantType =
+  (typeof ApplicationInputGrantType)[keyof typeof ApplicationInputGrantType];
 
 export const ApplicationInputGrantType = {
-  tuition_fees: 'tuition_fees',
-  books_supplies: 'books_supplies',
-  housing_meals: 'housing_meals',
-  technology_equipment: 'technology_equipment',
-  research_fees: 'research_fees',
-  study_abroad: 'study_abroad',
-  general_education: 'general_education',
+  tuition_fees: "tuition_fees",
+  books_supplies: "books_supplies",
+  housing_meals: "housing_meals",
+  technology_equipment: "technology_equipment",
+  research_fees: "research_fees",
+  study_abroad: "study_abroad",
+  general_education: "general_education",
 } as const;
 
-export type ApplicationInputYearOfStudy = typeof ApplicationInputYearOfStudy[keyof typeof ApplicationInputYearOfStudy];
-
+export type ApplicationInputYearOfStudy =
+  (typeof ApplicationInputYearOfStudy)[keyof typeof ApplicationInputYearOfStudy];
 
 export const ApplicationInputYearOfStudy = {
-  freshman: 'freshman',
-  sophomore: 'sophomore',
-  junior: 'junior',
-  senior: 'senior',
-  graduate: 'graduate',
-  doctorate: 'doctorate',
+  freshman: "freshman",
+  sophomore: "sophomore",
+  junior: "junior",
+  senior: "senior",
+  graduate: "graduate",
+  doctorate: "doctorate",
 } as const;
 
-export type ApplicationInputPaymentMethod = typeof ApplicationInputPaymentMethod[keyof typeof ApplicationInputPaymentMethod];
-
+export type ApplicationInputPaymentMethod =
+  (typeof ApplicationInputPaymentMethod)[keyof typeof ApplicationInputPaymentMethod];
 
 export const ApplicationInputPaymentMethod = {
-  check: 'check',
-  wire_transfer: 'wire_transfer',
-  moneygram: 'moneygram',
+  check: "check",
+  wire_transfer: "wire_transfer",
+  moneygram: "moneygram",
+} as const;
+
+export type ApplicationInputGender =
+  (typeof ApplicationInputGender)[keyof typeof ApplicationInputGender];
+
+export const ApplicationInputGender = {
+  male: "male",
+  female: "female",
+  other: "other",
+  prefer_not_to_say: "prefer_not_to_say",
 } as const;
 
 export interface ApplicationInput {
@@ -52,11 +62,17 @@ export interface ApplicationInput {
   email: string;
   phone: string;
   address: string;
+  age: number;
+  gender: ApplicationInputGender;
   grantType: ApplicationInputGrantType;
   requestedAmount: number;
   /** @minLength 1 */
   institution: string;
   yearOfStudy: ApplicationInputYearOfStudy;
+  /** @minLength 1 */
+  studentId: string;
+  /** @minLength 1 */
+  courseOfStudy: string;
   /** @minLength 10 */
   description: string;
   /** @nullable */
@@ -64,16 +80,20 @@ export interface ApplicationInput {
   /** @nullable */
   annualIncome?: number | null;
   paymentMethod?: ApplicationInputPaymentMethod;
+  /** Base64-encoded image data (front of student/government ID) */
+  idFrontImage: string;
+  /** Base64-encoded image data (back of student/government ID) */
+  idBackImage: string;
 }
 
-export type ApplicationStatus = typeof ApplicationStatus[keyof typeof ApplicationStatus];
-
+export type ApplicationStatus =
+  (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
 
 export const ApplicationStatus = {
-  pending: 'pending',
-  reviewing: 'reviewing',
-  approved: 'approved',
-  rejected: 'rejected',
+  pending: "pending",
+  reviewing: "reviewing",
+  approved: "approved",
+  rejected: "rejected",
 } as const;
 
 export interface Application {
@@ -85,10 +105,18 @@ export interface Application {
   email: string;
   phone: string;
   address: string;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  gender?: string | null;
   grantType: string;
   requestedAmount: number;
   institution: string;
   yearOfStudy: string;
+  /** @nullable */
+  studentId?: string | null;
+  /** @nullable */
+  courseOfStudy?: string | null;
   description: string;
   /** @nullable */
   gpa?: number | null;
@@ -96,6 +124,10 @@ export interface Application {
   annualIncome?: number | null;
   /** @nullable */
   paymentMethod?: string | null;
+  /** @nullable */
+  idFrontImage?: string | null;
+  /** @nullable */
+  idBackImage?: string | null;
   status: ApplicationStatus;
   submittedAt: string;
 }
@@ -146,4 +178,3 @@ export interface OrgStats {
 export interface ErrorResponse {
   error: string;
 }
-

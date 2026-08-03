@@ -5,82 +5,101 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 /**
  * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
-  "status": zod.string()
-})
-
+  status: zod.string(),
+});
 
 /**
  * @summary Submit a student aid application
  */
 
-
 export const submitApplicationBodyEmailMin = 3;
-
 
 export const submitApplicationBodyDescriptionMin = 10;
 
-
-
 export const SubmitApplicationBody = zod.object({
-  "firstName": zod.string().min(1),
-  "lastName": zod.string().min(1),
-  "email": zod.string().min(submitApplicationBodyEmailMin),
-  "phone": zod.string(),
-  "address": zod.string(),
-  "grantType": zod.enum(['tuition_fees', 'books_supplies', 'housing_meals', 'technology_equipment', 'research_fees', 'study_abroad', 'general_education']),
-  "requestedAmount": zod.number(),
-  "institution": zod.string().min(1),
-  "yearOfStudy": zod.enum(['freshman', 'sophomore', 'junior', 'senior', 'graduate', 'doctorate']),
-  "description": zod.string().min(submitApplicationBodyDescriptionMin),
-  "gpa": zod.number().nullish(),
-  "annualIncome": zod.number().nullish(),
-  "paymentMethod": zod.enum(['check', 'wire_transfer', 'moneygram']).optional()
-})
+  firstName: zod.string().min(1),
+  lastName: zod.string().min(1),
+  email: zod.string().min(submitApplicationBodyEmailMin),
+  phone: zod.string(),
+  address: zod.string(),
+  age: zod.number(),
+  gender: zod.enum(["male", "female", "other", "prefer_not_to_say"]),
+  grantType: zod.enum([
+    "tuition_fees",
+    "books_supplies",
+    "housing_meals",
+    "technology_equipment",
+    "research_fees",
+    "study_abroad",
+    "general_education",
+  ]),
+  requestedAmount: zod.number(),
+  institution: zod.string().min(1),
+  yearOfStudy: zod.enum([
+    "freshman",
+    "sophomore",
+    "junior",
+    "senior",
+    "graduate",
+    "doctorate",
+  ]),
+  studentId: zod.string().min(1),
+  courseOfStudy: zod.string().min(1),
+  description: zod.string().min(submitApplicationBodyDescriptionMin),
+  gpa: zod.number().nullish(),
+  annualIncome: zod.number().nullish(),
+  paymentMethod: zod.enum(["check", "wire_transfer", "moneygram"]).optional(),
+  idFrontImage: zod.string(),
+  idBackImage: zod.string(),
+});
 
 export const SubmitApplicationResponse = zod.object({
-  "id": zod.number(),
-  "applicationId": zod.string().nullish(),
-  "firstName": zod.string(),
-  "lastName": zod.string(),
-  "email": zod.string(),
-  "phone": zod.string(),
-  "address": zod.string(),
-  "grantType": zod.string(),
-  "requestedAmount": zod.number(),
-  "institution": zod.string(),
-  "yearOfStudy": zod.string(),
-  "description": zod.string(),
-  "gpa": zod.number().nullish(),
-  "annualIncome": zod.number().nullish(),
-  "paymentMethod": zod.string().nullish(),
-  "status": zod.enum(['pending', 'reviewing', 'approved', 'rejected']),
-  "submittedAt": zod.string()
-})
-
+  id: zod.number(),
+  applicationId: zod.string().nullish(),
+  firstName: zod.string(),
+  lastName: zod.string(),
+  email: zod.string(),
+  phone: zod.string(),
+  address: zod.string(),
+  age: zod.number().nullish(),
+  gender: zod.string().nullish(),
+  grantType: zod.string(),
+  requestedAmount: zod.number(),
+  institution: zod.string(),
+  yearOfStudy: zod.string(),
+  studentId: zod.string().nullish(),
+  courseOfStudy: zod.string().nullish(),
+  description: zod.string(),
+  gpa: zod.number().nullish(),
+  annualIncome: zod.number().nullish(),
+  paymentMethod: zod.string().nullish(),
+  idFrontImage: zod.string().nullish(),
+  idBackImage: zod.string().nullish(),
+  status: zod.enum(["pending", "reviewing", "approved", "rejected"]),
+  submittedAt: zod.string(),
+});
 
 /**
  * @summary List all approved testimonials
  */
 export const ListTestimonialsResponseItem = zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "location": zod.string(),
-  "grantType": zod.string(),
-  "message": zod.string(),
-  "rating": zod.number(),
-  "avatarInitials": zod.string().nullish(),
-  "createdAt": zod.string()
-})
-export const ListTestimonialsResponse = zod.array(ListTestimonialsResponseItem)
-
+  id: zod.number(),
+  name: zod.string(),
+  location: zod.string(),
+  grantType: zod.string(),
+  message: zod.string(),
+  rating: zod.number(),
+  avatarInitials: zod.string().nullish(),
+  createdAt: zod.string(),
+});
+export const ListTestimonialsResponse = zod.array(ListTestimonialsResponseItem);
 
 /**
  * @summary Submit a contact message
@@ -88,38 +107,32 @@ export const ListTestimonialsResponse = zod.array(ListTestimonialsResponseItem)
 
 export const submitContactBodyEmailMin = 3;
 
-
 export const submitContactBodyMessageMin = 10;
 
-
-
 export const SubmitContactBody = zod.object({
-  "name": zod.string().min(1),
-  "email": zod.string().min(submitContactBodyEmailMin),
-  "phone": zod.string().nullish(),
-  "subject": zod.string().min(1),
-  "message": zod.string().min(submitContactBodyMessageMin)
-})
+  name: zod.string().min(1),
+  email: zod.string().min(submitContactBodyEmailMin),
+  phone: zod.string().nullish(),
+  subject: zod.string().min(1),
+  message: zod.string().min(submitContactBodyMessageMin),
+});
 
 export const SubmitContactResponse = zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "email": zod.string(),
-  "phone": zod.string().nullish(),
-  "subject": zod.string(),
-  "message": zod.string(),
-  "createdAt": zod.string()
-})
-
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  phone: zod.string().nullish(),
+  subject: zod.string(),
+  message: zod.string(),
+  createdAt: zod.string(),
+});
 
 /**
  * @summary Get organization statistics
  */
 export const GetStatsResponse = zod.object({
-  "totalApplications": zod.number(),
-  "approvedApplications": zod.number(),
-  "livesImpacted": zod.number(),
-  "totalDisbursed": zod.number()
-})
-
-
+  totalApplications: zod.number(),
+  approvedApplications: zod.number(),
+  livesImpacted: zod.number(),
+  totalDisbursed: zod.number(),
+});

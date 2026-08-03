@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 type Status = "pending" | "reviewing" | "approved" | "rejected";
 
@@ -30,14 +30,20 @@ interface Application {
   email: string;
   phone: string;
   address: string;
+  age: number | null;
+  gender: string | null;
   institution: string;
   yearOfStudy: string;
+  studentId: string | null;
+  courseOfStudy: string | null;
   grantType: string;
   requestedAmount: number;
   gpa: number | null;
   annualIncome: number | null;
   description: string;
   paymentMethod: string | null;
+  idFrontImage: string | null;
+  idBackImage: string | null;
   status: Status;
   submittedAt: string;
 }
@@ -73,6 +79,13 @@ const paymentLabels: Record<string, string> = {
   check: "Check (mailed)",
   wire_transfer: "Wire Transfer",
   moneygram: "MoneyGram",
+};
+
+const genderLabels: Record<string, string> = {
+  male: "Male",
+  female: "Female",
+  other: "Other",
+  prefer_not_to_say: "Prefer not to say",
 };
 
 const statusConfig: Record<Status, { label: string; color: string }> = {
@@ -500,7 +513,25 @@ export default function AdminDashboard() {
                   { label: "Email", value: selected.email },
                   { label: "Phone", value: selected.phone },
                   { label: "Address", value: selected.address },
+                  {
+                    label: "Age",
+                    value: selected.age != null ? String(selected.age) : "—",
+                  },
+                  {
+                    label: "Gender",
+                    value: selected.gender
+                      ? (genderLabels[selected.gender] ?? selected.gender)
+                      : "—",
+                  },
                   { label: "Institution", value: selected.institution },
+                  {
+                    label: "Student ID Number",
+                    value: selected.studentId ?? "—",
+                  },
+                  {
+                    label: "Course of Study",
+                    value: selected.courseOfStudy ?? "—",
+                  },
                   {
                     label: "Year of Study",
                     value:
@@ -554,6 +585,40 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+
+              {(selected.idFrontImage || selected.idBackImage) && (
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                    ID Verification
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {selected.idFrontImage && (
+                      <div className="bg-muted/30 rounded-lg p-3">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Front of ID
+                        </div>
+                        <img
+                          src={selected.idFrontImage}
+                          alt="Front of applicant ID"
+                          className="rounded-md border border-border w-full object-contain max-h-64"
+                        />
+                      </div>
+                    )}
+                    {selected.idBackImage && (
+                      <div className="bg-muted/30 rounded-lg p-3">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Back of ID
+                        </div>
+                        <img
+                          src={selected.idBackImage}
+                          alt="Back of applicant ID"
+                          className="rounded-md border border-border w-full object-contain max-h-64"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="bg-muted/30 rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
