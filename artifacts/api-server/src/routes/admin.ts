@@ -29,10 +29,32 @@ router.post("/login", async (req, res): Promise<void> => {
   res.json({ token });
 });
 
-// GET /admin/applications — list all applications
-router.get("/applications", requireAdmin, async (req, res): Promise<void> => {
+// GET /admin/applications — list all applications (WITHOUT IMAGES)
+router.get("/applications", requireAdmin, async (_req, res): Promise<void> => {
   const applications = await db
-    .select()
+    .select({
+      id: applicationsTable.id,
+      applicationId: applicationsTable.applicationId,
+      firstName: applicationsTable.firstName,
+      lastName: applicationsTable.lastName,
+      email: applicationsTable.email,
+      phone: applicationsTable.phone,
+      address: applicationsTable.address,
+      age: applicationsTable.age,
+      gender: applicationsTable.gender,
+      institution: applicationsTable.institution,
+      yearOfStudy: applicationsTable.yearOfStudy,
+      studentId: applicationsTable.studentId,
+      courseOfStudy: applicationsTable.courseOfStudy,
+      grantType: applicationsTable.grantType,
+      requestedAmount: applicationsTable.requestedAmount,
+      gpa: applicationsTable.gpa,
+      annualIncome: applicationsTable.annualIncome,
+      description: applicationsTable.description,
+      paymentMethod: applicationsTable.paymentMethod,
+      status: applicationsTable.status,
+      submittedAt: applicationsTable.submittedAt,
+    })
     .from(applicationsTable)
     .orderBy(desc(applicationsTable.submittedAt));
 
@@ -57,8 +79,6 @@ router.get("/applications", requireAdmin, async (req, res): Promise<void> => {
       annualIncome: a.annualIncome != null ? Number(a.annualIncome) : null,
       description: a.description,
       paymentMethod: a.paymentMethod,
-      idFrontImage: a.idFrontImage,
-      idBackImage: a.idBackImage,
       status: a.status,
       submittedAt: a.submittedAt.toISOString(),
     })),
@@ -139,12 +159,9 @@ router.patch(
       !status ||
       !validStatuses.includes(status as (typeof validStatuses)[number])
     ) {
-      res
-        .status(400)
-        .json({
-          error:
-            "Status must be one of: pending, reviewing, approved, rejected",
-        });
+      res.status(400).json({
+        error: "Status must be one of: pending, reviewing, approved, rejected",
+      });
       return;
     }
 
