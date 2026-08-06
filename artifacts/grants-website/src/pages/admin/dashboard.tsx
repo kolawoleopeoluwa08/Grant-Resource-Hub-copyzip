@@ -429,7 +429,21 @@ export default function AdminDashboard() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelected(app)}
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(
+                                `${BASE}/api/admin/applications/${app.id}`,
+                                { headers: authHeaders() },
+                              );
+                              if (!res.ok)
+                                throw new Error("Failed to load application");
+                              const fullApplication = await res.json();
+                              setSelected(fullApplication);
+                            } catch (err) {
+                              console.error(err);
+                              setError("Failed to load application details.");
+                            }
+                          }}
                         >
                           <Eye className="h-3.5 w-3.5 mr-1" /> View
                         </Button>
@@ -468,21 +482,7 @@ export default function AdminDashboard() {
                 )}
               </div>
               <button
-                onClick={async () => {
-                  try {
-                    const res = await fetch(
-                      `${BASE}/api/admin/applications/${app.id}`,
-                      {
-                        headers: authHeaders(),
-                      },
-                    );
-
-                    const fullApplication = await res.json();
-                    setSelected(fullApplication);
-                  } catch (err) {
-                    console.error(err);
-                  }
-                }}
+                onClick={() => setSelected(null)}
                 className="text-primary-foreground/70 hover:text-primary-foreground text-2xl leading-none"
               >
                 ×
