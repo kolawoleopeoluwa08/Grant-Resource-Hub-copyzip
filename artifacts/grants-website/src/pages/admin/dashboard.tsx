@@ -468,7 +468,21 @@ export default function AdminDashboard() {
                 )}
               </div>
               <button
-                onClick={() => setSelected(null)}
+                onClick={async () => {
+                  try {
+                    const res = await fetch(
+                      `${BASE}/api/admin/applications/${app.id}`,
+                      {
+                        headers: authHeaders(),
+                      },
+                    );
+
+                    const fullApplication = await res.json();
+                    setSelected(fullApplication);
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
                 className="text-primary-foreground/70 hover:text-primary-foreground text-2xl leading-none"
               >
                 ×
